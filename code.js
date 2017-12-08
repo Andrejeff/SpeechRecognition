@@ -1,32 +1,29 @@
-window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
 console.log("Init")
 
-const recognition = new SpeechRecognition()
-recognition.interimResults = true;
+if (annyang) {
+    // Let's define a command.
+    var commands = {
+        'slayer skip': () => {
+            alert('Skip')
+        },
+        'slayer leave': () => {
+            alert('Leave')
+        }
+    };
 
-recognition.addEventListener('result', e => {
-    const transcript = Array.from(e.results)
-        .map(result => result[0])
-        .map(result => result.transcript)
-        .join('')
-
-    let lowTrans = transcript.toLowerCase()
-
-    if(lowTrans.includes('slayer')) {
-        if(lowTrans.includes('play')) {
-            console.log("play", transcript)
+    annyang.addCommands(commands);
+    annyang.addCallback('result', e => {
+        let speech = (data) => {
+            return e[0].toLowerCase().includes(data)
         }
 
-        if(lowTrans.includes('skip')) {
-            console.log("skip", transcript)
+        if(speech('slayer play')) {
+            let array = e[0].trim().split(' ')
+            delete array[0]
+            delete array[1]
+            let final = array.join(' ').trim()
         }
-
-        if(lowTrans.includes('leave')) {
-            console.log("leave", transcript)
-        }
-    }
-})
-
-recognition.addEventListener('end', recognition.start);
-
-recognition.start();
+    })
+    
+    annyang.start();
+}
